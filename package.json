@@ -1,0 +1,15 @@
+{
+  "name": "error-handling-and-aggregation-pipline",
+  "version": "1.0.0",
+  "description": "Express error handling and MongoDB aggregation pipline",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --watch --env-file=.env index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1",
+    "mongoose": "^8.8.0"
+  }
+}
