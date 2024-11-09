@@ -58,5 +58,29 @@ const MoviesSchema = new mongoose.Schema(
     }
 );
 
-const MoviesModel = mongoose.model("Movies", MoviesSchema)
+// const MoviesSchema = new mongoose.Schema(
+//     {
+//         name: {
+//             type: String,
+//             required: true,
+//             unique: true,
+//         },
+//         description: {
+//             type: String,
+//             required: true
+//         },
+//         duration: {
+//             type: Number,
+//             required: true
+//         },
+//         ratings: {
+//             type: Number,
+//             default: 1.0
+
+//         },
+
+//     }
+// );
+
+const MoviesModel = mongoose.model("Movies", MoviesSchema);
 export default MoviesModel;
