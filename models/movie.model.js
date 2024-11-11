@@ -56,8 +56,24 @@ const MoviesSchema = new mongoose.Schema(
             type: Number,
             required: [true, "Price is required"]
         }
+    },
+    {
+        // display all the virtual properties in the json data
+        toJSON: {
+            virtuals: true,
+        },
+        // toObject will make virtual properties accesseble in the code, for example showing duraction in hours on the frontend
+        toObject: {
+            virtuals: true,
+        }
     }
 );
+
+
+// Virtual Property, # you cannot use virtual property for querying data because these virtual properties are not the part of database 
+MoviesSchema.virtual('durationInHours').get(function(){
+    return this.duration / 60; // converthing duration into hours
+})
 
 const MoviesModel = mongoose.model("Movies", MoviesSchema);
 export default MoviesModel;

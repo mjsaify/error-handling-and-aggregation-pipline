@@ -298,12 +298,13 @@ export const GetMovieGenere = async (req, res) => {
             // {
             //     $limit: 8,
             // }
-            {
-                // this not working, this would show only the matched generes document
-                $match: {
-                    generes
-                },
-            }
+            
+            // {
+            //     // this not working, this would show only the matched generes document
+            //     $match: {
+            //         generes
+            //     },
+            // }
         ])
 
 
