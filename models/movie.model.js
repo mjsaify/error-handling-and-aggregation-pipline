@@ -22,6 +22,7 @@ const MoviesSchema = new mongoose.Schema(
         },
         totalRatings: {
             type: Number,
+            select: false, // this field will be excluded from the result
         },
         releaseYear: {
             type: String,
