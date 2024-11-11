@@ -3,7 +3,7 @@ import ApiFeatures from "../utils/ApiFeatures.js";
 
 
 // Not Working: To resolve watch #76, #77, #80 videos procademy node js 
-export const GetHighestRatedMoveis = (req, _, next) =>{
+export const GetHighestRatedMoveis = (req, _, next) => {
     // req.query.limit = '5';
     // req.query.sort = '-ratings';
     // next()
@@ -202,3 +202,123 @@ export const DeleteMovie = async (req, res) => {
 };
 
 
+// MongoDB Aggregation Pipeline
+export const GetMovieStats = async (req, res) => {
+    try {
+        // aggregate is a mongodb feature which allows us to aggregate data for example: calculating averages, getting min and max value, or getting the sum etc.
+        const stats = await MoviesModel.aggregate([
+            {
+                $match: {
+                    ratings: {
+                        $gte: 4.5, // filter those data where rating is greater than and equal to 4.5
+                    }
+                },
+            },
+            {
+
+                $group: { // groups document using accumulator
+                    // _id: null, // this will specify what we want to group by
+                    _id: '$releaseYear', // grouping documents based on releaseYear
+                    avgRating: { $avg: '$ratings' }, // calculates average ratings of all the movies, specify the field with '$fieldName'
+                    avgPrice: { $avg: '$price' }, // calculates average price of all the movies
+                    minPrice: { $min: '$price' },
+                    maxPrice: { $max: '$price' },
+                    totalPrice: { $sum: '$price' },
+                    movieCount: { $sum: 1 }, // for each document it will add 1, initlally movieCount will be 0
+                },
+            },
+            {
+                $sort: {
+                    minPrice: 1, // sorting results baed on minPrice, 1 for ascending order
+                }
+            },
+            {
+                $match: {
+                    maxPrice: {
+                        $gte: 15,
+                    }
+                }
+            }
+        ]);
+
+        return res.status(200).json({
+            status: true,
+            length: stats.length,
+            data: {
+                stats
+            },
+        });
+    } catch (error) {
+        console.log(error)
+        return res.status(201).json({
+            status: false,
+            message: error.message,
+        });
+    }
+};
+
+
+export const GetMovieGenere = async (req, res) => {
+    try {
+        const generes = req.params.genre;
+        const movies = await MoviesModel.aggregate([
+            {
+                // deconstructs an array field in a document and create separate output documents for each item in the array
+                $unwind: '$generes'
+            },
+            {
+                $group: {
+                    _id: '$generes',
+                    movieCount: { $sum: 1 },
+                    movies: {
+                        $push: {
+                            name: '$name',
+                            // description: '$description',
+                            // coverImage: '$coverImage',
+                        }
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    generes: '$_id'
+                }
+            },
+            {
+                // projects tell which fields do we want or don't want in the result
+                $project: {
+                    _id: 0, // id field will not be in the response
+                }
+            },
+            {
+                $sort: {
+                    movieCount: -1,
+                }
+            },
+            // {
+            //     $limit: 8,
+            // }
+            {
+                // this not working, this would show only the matched generes document
+                $match: {
+                    generes
+                },
+            }
+        ])
+
+
+        return res.status(200).json({
+            status: true,
+            length: movies.length,
+            data: {
+                movies
+            },
+        });
+    } catch (error) {
+        console.log(error)
+        return res.status(201).json({
+            status: false,
+            message: error.message,
+        });
+    }
+}
