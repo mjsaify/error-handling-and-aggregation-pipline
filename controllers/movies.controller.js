@@ -227,18 +227,18 @@ export const GetMovieStats = async (req, res) => {
                     movieCount: { $sum: 1 }, // for each document it will add 1, initlally movieCount will be 0
                 },
             },
-            {
-                $sort: {
-                    minPrice: 1, // sorting results baed on minPrice, 1 for ascending order
-                }
-            },
-            {
-                $match: {
-                    maxPrice: {
-                        $gte: 15,
-                    }
-                }
-            }
+            // {
+            //     $sort: {
+            //         minPrice: 1, // sorting results based on minPrice, 1 for ascending order
+            //     }
+            // },
+            // {
+            //     $match: {
+            //         maxPrice: {
+            //             $gte: 15,
+            //         }
+            //     }
+            // }
         ]);
 
         return res.status(200).json({
