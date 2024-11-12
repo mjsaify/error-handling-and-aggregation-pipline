@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import fs from 'fs';
+import validator from "validator";
+
 
 const MoviesSchema = new mongoose.Schema(
     {
@@ -8,6 +10,11 @@ const MoviesSchema = new mongoose.Schema(
             required: [true, "Name is required"],
             unique: true,
             trim: true, // removes any whitespace before and after name
+            
+            // data validators
+            maxLength: [100, "Movie name must not have more than 100 characters"],
+            minLength: [4, "Movie name atleast have 4 characters"],
+            validate: [validator.isAlpha, "Name should only contain alphabets and spaces"] // validate for number and spaces
         },
         description: {
             type: String,
@@ -20,6 +27,16 @@ const MoviesSchema = new mongoose.Schema(
         },
         ratings: {
             type: Number,
+            // min: [1, "Ratings should be 1 or more than 1"],
+            // max: [5, "Ratings cannot be more than 5"],
+            
+            // Custome validator
+            validate: {
+                validator: function(value){
+                    return value >= 1 && value <= 5; // return true or false based on condition
+                },
+                message: "Ratings should be above 1 and below 5, you passed ({VALUE})"
+            }
         },
         totalRatings: {
             type: Number,
@@ -40,6 +57,10 @@ const MoviesSchema = new mongoose.Schema(
         generes: {
             type: [String], // array of string
             required: [true, "Generes is required"],
+            // enum: {
+            //     values: ["Action", "Adventure", "Sci-fi", "Thriller", "Crime", "Drama", "Comedy", "Romance", "Biography"],
+            //     message: "This genre does not exist",
+            // },
         },
         directors: {
             type: [String],
@@ -51,7 +72,7 @@ const MoviesSchema = new mongoose.Schema(
         },
         actors: {
             type: [String],
-            required: [true, "CoverImage is required"],
+            required: [true, "Actors are required"],
         },
         price: {
             type: Number,
