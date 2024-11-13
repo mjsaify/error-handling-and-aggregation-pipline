@@ -1,5 +1,7 @@
 import Express from 'express';
 import router from './routes/index.js';
+import CustomError from './utils/CustomError.js';
+import GlobalErrorControllerHandler from './controllers/error.controller.js'
 
 const app = Express();
 
@@ -16,27 +18,19 @@ app.all('*', (req, res, next) => {
     //     message: `Can't find ${req.originalUrl} on the server`
     // });
 
-    // error object
-    const error = new Error(`Can't find ${req.originalUrl} on the server`);
-    error.status = 'fail';
-    error.statusCode = 404;
+    // defining error object
+    // const error = new Error(`Can't find ${req.originalUrl} on the server`);
+    // error.status = 'fail';
+    // error.statusCode = 404;
+
+    // using our custom erro class instead of error object that is defined above
+    const error = new CustomError(404, `Can't find ${req.originalUrl} on the server`); // it will call the constructor of this error class
+
 
     next(error); // when we pass an argument to next function no matter what that argument is express will automatically know there was error, in that case express will skip all other middleware functions which is currently present in middleware stack and it will directly call the global middleware error handling function 
 });
 
-
-// Global Error Handling middleware
-// when we specify these 4 parameters in a middleware express will automatically recognize it as error handling middleware, therefor express will only call this middleware when there is an error
-
-// # Whenever we want to call this middleware from any part of the application code first we need to create an error object
-app.use((err, req, res, next) => {
-    err.statusCode = err.statusCode || 500; // if this error has status code send that statu code if not send 500 status code
-    err.status = err.status || 'error';
-
-    res.status(err.statusCode).json({
-        status: err.statusCode,
-        message: err.message,
-    })
-});
+// # Whenever we want to call this middleware from any part of the application code first we need to create an error object, which is defined in app.all function but later error object was commented because we are using CustomError class now
+app.use(GlobalErrorControllerHandler);
 
 export { app };
