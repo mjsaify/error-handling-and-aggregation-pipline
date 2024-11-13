@@ -1,4 +1,4 @@
-# Global Error Handling
+# Error Handling
 
 . Two types of Errors
 
