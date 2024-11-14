@@ -1,6 +1,19 @@
-import { app } from "./app.js";
 import connectDB from './config/db.js';
 import { PORT } from "./constants.js";
+
+// Handling Uncaught Exception error. write this code before any other code that could potentially throw an uncaught exception, ideally at the very beginning of your main file (e.g., before starting the server or establishing a database connection). This ensures that any uncaught exceptions occurring early in the application's lifecycle are properly handled.
+process.on('uncaughtException', (err) => {
+    console.error("Uncaught Exception! Shutting down...");
+    console.error(err.name, err.message);
+    process.exit(1);
+
+    // The server variable is not required here because these uncaughtException are not going to happen asynchronously and these error has nothing to do with the server // All the uncaughtException errors will happen in the synchronous code there for we do not require the server variable here
+    // server.close(() => {
+    //     process.exit(1);
+    // });
+});
+
+import { app } from "./app.js";
 
 ; (async function () {
     try {
@@ -12,7 +25,7 @@ import { PORT } from "./constants.js";
             console.log("Server is up and running on port", PORT);
         });
 
-        // Handling unhandled promise rejections globally
+        // Handling unhandled promise rejections
         process.on('unhandledRejection', (err) => {
             console.error("Unhandled Rejection Occured! Shutting down...");
             console.error(err.message);

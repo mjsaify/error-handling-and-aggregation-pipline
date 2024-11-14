@@ -32,5 +32,4 @@ app.all('*', (req, res, next) => {
 
 // # Whenever we want to call this middleware from any part of the application code first we need to create an error object, which is defined in app.all function but later error object was commented because we are using CustomError class now
 app.use(GlobalErrorControllerHandler);
-
 export { app };
