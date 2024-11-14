@@ -8,15 +8,28 @@ import { PORT } from "./constants.js";
         await connectDB();
 
         // Start the server only if DB connection succeeds
-        app.listen(PORT, () => {
+        const server = app.listen(PORT, () => {
             console.log("Server is up and running on port", PORT);
         });
+
+        // Handling unhandled promise rejections globally
+        process.on('unhandledRejection', (err) => {
+            console.error("Unhandled Rejection Occured! Shutting down...");
+            console.error(err.message);
+
+            server.close(() => {
+                process.exit(1); // Shut down the process
+            });
+        });
+
+        // handle server runtime error after server has started, an error can occured after server has started like the port is already taken
+        server.on("error", (error) => {
+            console.log("Server encountered an error after starting:", error);
+            process.exit(1);
+        })
     } catch (error) {
         console.log("Server startup failed due to:", error);
+        process.exit(1);
     }
 })();
 
-// handle server runtime error after server has started
-app.on("error", (error) => {
-    console.log("Server encountered an error after starting:", error);
-})
